@@ -5,6 +5,10 @@ import renderer from 'vite-plugin-electron-renderer'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import fs from 'fs'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,6 +20,11 @@ export default defineConfig({
       {
         entry: 'electron/main.ts',
         onstart(options) {
+          // Copy preload.cjs to dist-electron
+          const src = path.join(__dirname, 'electron/preload.cjs')
+          const dest = path.join(__dirname, 'dist-electron/preload.cjs')
+          fs.copyFileSync(src, dest)
+
           options.startup()
         },
         vite: {
@@ -24,17 +33,6 @@ export default defineConfig({
             rollupOptions: {
               external: ['electron']
             }
-          }
-        }
-      },
-      {
-        entry: 'electron/preload.ts',
-        onstart(options) {
-          options.reload()
-        },
-        vite: {
-          build: {
-            outDir: 'dist-electron'
           }
         }
       },

@@ -6,34 +6,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Platform info
   platform: process.platform,
 
-  // Example: Send message to main process
-  sendMessage: (channel: string, data: any) => {
-    // Whitelist channels
-    const validChannels = ['toMain']
-    if (validChannels.includes(channel)) {
-      ipcRenderer.send(channel, data)
-    }
-  },
-
-  // Example: Receive message from main process
-  onMessage: (channel: string, func: (...args: any[]) => void) => {
-    const validChannels = ['fromMain']
-    if (validChannels.includes(channel)) {
-      // Strip event as it includes `sender`
-      ipcRenderer.on(channel, (event, ...args) => func(...args))
-    }
-  }
+  // MCP Server Operations
+  connectToServer: (config: any) => ipcRenderer.invoke('mcp:connect', config),
+  disconnectFromServer: (serverId: string) => ipcRenderer.invoke('mcp:disconnect', serverId),
+  getServerResources: (serverId: string) => ipcRenderer.invoke('mcp:getResources', serverId),
+  getServerPrompts: (serverId: string) => ipcRenderer.invoke('mcp:getPrompts', serverId),
+  getServerTools: (serverId: string) => ipcRenderer.invoke('mcp:getTools', serverId),
+  callTool: (serverId: string, toolName: string, args: any) =>
+    ipcRenderer.invoke('mcp:callTool', serverId, toolName, args),
+  getPrompt: (serverId: string, promptName: string, args: any) =>
+    ipcRenderer.invoke('mcp:getPrompt', serverId, promptName, args),
+  readResource: (serverId: string, uri: string) =>
+    ipcRenderer.invoke('mcp:readResource', serverId, uri),
 })
-
-// Type definitions for TypeScript
-export interface IElectronAPI {
-  platform: string
-  sendMessage: (channel: string, data: any) => void
-  onMessage: (channel: string, func: (...args: any[]) => void) => void
-}
-
-declare global {
-  interface Window {
-    electronAPI: IElectronAPI
-  }
-}
