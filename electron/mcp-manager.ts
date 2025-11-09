@@ -92,7 +92,9 @@ class MCPManager {
   async disconnectServer(serverId: string): Promise<void> {
     const server = this.servers.get(serverId)
     if (!server) {
-      throw new Error(`Server ${serverId} not found`)
+      // Server is already disconnected or doesn't exist, nothing to do
+      console.log(`Server ${serverId} is already disconnected or not found`)
+      return
     }
 
     try {
@@ -102,6 +104,8 @@ class MCPManager {
       console.log(`Disconnected from server: ${server.config.name}`)
     } catch (error) {
       console.error(`Error disconnecting from server ${serverId}:`, error)
+      // Still delete from map even if close failed
+      this.servers.delete(serverId)
       throw error
     }
   }

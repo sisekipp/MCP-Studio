@@ -2,11 +2,11 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Server, Circle, Trash2, Pencil } from 'lucide-react'
+import { Plus, Server, Circle, Trash2, Settings } from 'lucide-react'
 import { useServers } from '@/contexts/ServerContext'
 import { useState } from 'react'
 import { AddServerDialog } from '@/components/AddServerDialog'
-import type { ServerConfig } from '@/types/server'
+import type { ServerConfig, ServerConnection } from '@/types/server'
 
 export const Route = createFileRoute('/')({
   component: Servers,
@@ -159,7 +159,7 @@ function Servers() {
                             className="cursor-pointer"
                             onClick={(e) => handleEditServer(e, server)}
                           >
-                            <Pencil className="h-4 w-4" />
+                            <Settings className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="outline"
