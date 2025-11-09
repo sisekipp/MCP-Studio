@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react'
 import type { ServerConnection, ServerConfig, Resource, Prompt, Tool, LogEntry } from '@/types/server'
 
 interface ServerContextType {
@@ -19,10 +19,58 @@ const ServerContext = createContext<ServerContextType | undefined>(undefined)
 export function ServerProvider({ children }: { children: ReactNode }) {
   const [servers, setServers] = useState<ServerConnection[]>([])
   const [logs, setLogs] = useState<LogEntry[]>([])
+  const [isLoaded, setIsLoaded] = useState(false)
 
   const addLog = useCallback((log: Omit<LogEntry, 'timestamp'>) => {
     setLogs(prev => [...prev, { ...log, timestamp: new Date() }])
   }, [])
+
+  // Load servers from electron-store on mount
+  useEffect(() => {
+    const loadServers = async () => {
+      try {
+        const savedConfigs = await window.electronAPI.loadServers()
+        if (savedConfigs && savedConfigs.length > 0) {
+          const loadedServers: ServerConnection[] = savedConfigs.map(config => ({
+            id: config.id,
+            config,
+            status: 'disconnected'
+          }))
+          setServers(loadedServers)
+          addLog({
+            serverId: 'system',
+            level: 'info',
+            message: `Loaded ${savedConfigs.length} server configuration(s) from storage`
+          })
+        }
+      } catch (error) {
+        console.error('Failed to load servers from storage:', error)
+        addLog({
+          serverId: 'system',
+          level: 'error',
+          message: 'Failed to load server configurations from storage'
+        })
+      } finally {
+        setIsLoaded(true)
+      }
+    }
+    loadServers()
+  }, [addLog])
+
+  // Save servers to electron-store whenever they change
+  useEffect(() => {
+    if (!isLoaded) return // Don't save on initial load
+
+    const saveServers = async () => {
+      try {
+        const configs = servers.map(s => s.config)
+        await window.electronAPI.saveServers(configs)
+      } catch (error) {
+        console.error('Failed to save servers to storage:', error)
+      }
+    }
+    saveServers()
+  }, [servers, isLoaded])
 
   const addServer = useCallback((config: ServerConfig) => {
     // Add server with disconnected status (not connected yet)

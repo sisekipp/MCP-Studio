@@ -18,4 +18,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('mcp:getPrompt', serverId, promptName, args),
   readResource: (serverId, uri) =>
     ipcRenderer.invoke('mcp:readResource', serverId, uri),
+
+  // Store Operations for persisting server configurations
+  loadServers: () => ipcRenderer.invoke('store:getServers'),
+  saveServers: (servers) => ipcRenderer.invoke('store:setServers', servers),
 })

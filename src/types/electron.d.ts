@@ -9,6 +9,8 @@ export interface ElectronAPI {
   callTool: (serverId: string, toolName: string, args: unknown) => Promise<unknown>
   getPrompt: (serverId: string, promptName: string, args: Record<string, string>) => Promise<unknown>
   readResource: (serverId: string, uri: string) => Promise<unknown>
+  loadServers: () => Promise<ServerConfig[]>
+  saveServers: (servers: ServerConfig[]) => Promise<void>
 }
 
 declare global {

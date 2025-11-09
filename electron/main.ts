@@ -2,12 +2,21 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { mcpManager } from './mcp-manager.js'
+import Store from 'electron-store'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // Disable security warnings in development
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
+
+// Initialize electron-store for persisting server configurations
+const store = new Store({
+  name: 'config',
+  defaults: {
+    servers: []
+  }
+})
 
 let mainWindow: BrowserWindow | null = null
 
@@ -79,6 +88,15 @@ function setupIPCHandlers() {
 
   ipcMain.handle('mcp:readResource', async (_event, serverId, uri) => {
     return await mcpManager.readResource(serverId, uri)
+  })
+
+  // Store handlers for persisting server configurations
+  ipcMain.handle('store:getServers', () => {
+    return store.get('servers', [])
+  })
+
+  ipcMain.handle('store:setServers', (_event, servers) => {
+    store.set('servers', servers)
   })
 }
 
