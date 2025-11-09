@@ -1,7 +1,6 @@
 import { createRootRoute, Outlet, Link } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
-import { Server, Database, MessageSquare, Wrench, ScrollText, LayoutDashboard } from 'lucide-react'
-import { Separator } from '@/components/ui/separator'
+import { Server } from 'lucide-react'
 
 export const Route = createRootRoute({
   component: () => (
@@ -24,60 +23,8 @@ export const Route = createRootRoute({
                 className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground [&.active]:bg-primary [&.active]:text-primary-foreground"
                 activeProps={{ className: 'active' }}
               >
-                <LayoutDashboard className="h-4 w-4" />
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/servers"
-                className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground [&.active]:bg-primary [&.active]:text-primary-foreground"
-                activeProps={{ className: 'active' }}
-              >
                 <Server className="h-4 w-4" />
                 Servers
-              </Link>
-            </li>
-            <Separator className="my-3" />
-            <li>
-              <Link
-                to="/resources"
-                className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground [&.active]:bg-primary [&.active]:text-primary-foreground"
-                activeProps={{ className: 'active' }}
-              >
-                <Database className="h-4 w-4" />
-                Resources
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/prompts"
-                className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground [&.active]:bg-primary [&.active]:text-primary-foreground"
-                activeProps={{ className: 'active' }}
-              >
-                <MessageSquare className="h-4 w-4" />
-                Prompts
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/tools"
-                className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground [&.active]:bg-primary [&.active]:text-primary-foreground"
-                activeProps={{ className: 'active' }}
-              >
-                <Wrench className="h-4 w-4" />
-                Tools
-              </Link>
-            </li>
-            <Separator className="my-3" />
-            <li>
-              <Link
-                to="/logs"
-                className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground [&.active]:bg-primary [&.active]:text-primary-foreground"
-                activeProps={{ className: 'active' }}
-              >
-                <ScrollText className="h-4 w-4" />
-                Logs
               </Link>
             </li>
           </ul>

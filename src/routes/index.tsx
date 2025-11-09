@@ -1,98 +1,103 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Server, Database, Wrench, MessageSquare } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Plus, Server } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
-  component: Dashboard,
+  component: Servers,
 })
 
-function Dashboard() {
+function Servers() {
   return (
     <div className="p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Übersicht über alle verbundenen MCP Server und deren Ressourcen
-          </p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Connected Servers</CardTitle>
-              <Server className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Keine aktiven Verbindungen
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Resources</CardTitle>
-              <Database className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Verfügbare Ressourcen
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tools</CardTitle>
-              <Wrench className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Registrierte Tools
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Prompts</CardTitle>
-              <MessageSquare className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Prompt Templates
-              </p>
-            </CardContent>
-          </Card>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight">Server Management</h1>
+            <p className="text-muted-foreground mt-2">
+              Verwalte deine MCP Server Verbindungen
+            </p>
+          </div>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Server hinzufügen
+          </Button>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Willkommen zu MCP Studio</CardTitle>
+            <CardTitle>MCP Server Verbindung</CardTitle>
             <CardDescription>
-              Eine Desktop-Anwendung zum Testen und Debuggen von MCP (Model Context Protocol) Servern
+              Konfiguriere und verbinde dich mit MCP Servern über verschiedene Transport-Protokolle
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h4 className="font-semibold mb-2">Unterstützte Transport-Protokolle</h4>
-              <div className="flex gap-2">
-                <Badge variant="secondary">stdio</Badge>
-                <Badge variant="secondary">SSE</Badge>
-                <Badge variant="secondary">Streamable HTTP</Badge>
-              </div>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card className="border-2 border-dashed hover:border-primary cursor-pointer transition-colors">
+                <CardHeader className="text-center pb-2">
+                  <div className="mx-auto h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                    <Server className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-base">stdio</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-xs text-muted-foreground">
+                    Lokale Prozess-Kommunikation
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-2 border-dashed hover:border-primary cursor-pointer transition-colors">
+                <CardHeader className="text-center pb-2">
+                  <div className="mx-auto h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                    <Server className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-base">SSE</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-xs text-muted-foreground">
+                    Server-Sent Events
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-2 border-dashed hover:border-primary cursor-pointer transition-colors">
+                <CardHeader className="text-center pb-2">
+                  <div className="mx-auto h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                    <Server className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-base">HTTP</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-xs text-muted-foreground">
+                    Streamable HTTP
+                  </p>
+                </CardContent>
+              </Card>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">
-                Verbinde dich mit einem MCP Server über die <strong>Servers</strong> Seite, um
-                Resources, Prompts und Tools zu inspizieren und zu testen.
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Aktive Verbindungen</CardTitle>
+            <CardDescription>
+              Liste aller aktuell verbundenen MCP Server
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                <Server className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <p className="text-sm font-medium mb-1">Keine Server verbunden</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                Füge eine neue Server-Verbindung hinzu, um zu starten
               </p>
+              <Button variant="outline" size="sm">
+                <Plus className="mr-2 h-4 w-4" />
+                Ersten Server hinzufügen
+              </Button>
             </div>
           </CardContent>
         </Card>

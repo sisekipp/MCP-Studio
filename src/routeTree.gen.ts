@@ -9,130 +9,48 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ToolsRouteImport } from './routes/tools'
-import { Route as ServersRouteImport } from './routes/servers'
-import { Route as ResourcesRouteImport } from './routes/resources'
-import { Route as PromptsRouteImport } from './routes/prompts'
-import { Route as LogsRouteImport } from './routes/logs'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ServersServerIdRouteImport } from './routes/servers/$serverId'
 
-const ToolsRoute = ToolsRouteImport.update({
-  id: '/tools',
-  path: '/tools',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServersRoute = ServersRouteImport.update({
-  id: '/servers',
-  path: '/servers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResourcesRoute = ResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PromptsRoute = PromptsRouteImport.update({
-  id: '/prompts',
-  path: '/prompts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LogsRoute = LogsRouteImport.update({
-  id: '/logs',
-  path: '/logs',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServersServerIdRoute = ServersServerIdRouteImport.update({
+  id: '/servers/$serverId',
+  path: '/servers/$serverId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/logs': typeof LogsRoute
-  '/prompts': typeof PromptsRoute
-  '/resources': typeof ResourcesRoute
-  '/servers': typeof ServersRoute
-  '/tools': typeof ToolsRoute
+  '/servers/$serverId': typeof ServersServerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/logs': typeof LogsRoute
-  '/prompts': typeof PromptsRoute
-  '/resources': typeof ResourcesRoute
-  '/servers': typeof ServersRoute
-  '/tools': typeof ToolsRoute
+  '/servers/$serverId': typeof ServersServerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/logs': typeof LogsRoute
-  '/prompts': typeof PromptsRoute
-  '/resources': typeof ResourcesRoute
-  '/servers': typeof ServersRoute
-  '/tools': typeof ToolsRoute
+  '/servers/$serverId': typeof ServersServerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/logs' | '/prompts' | '/resources' | '/servers' | '/tools'
+  fullPaths: '/' | '/servers/$serverId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/logs' | '/prompts' | '/resources' | '/servers' | '/tools'
-  id:
-    | '__root__'
-    | '/'
-    | '/logs'
-    | '/prompts'
-    | '/resources'
-    | '/servers'
-    | '/tools'
+  to: '/' | '/servers/$serverId'
+  id: '__root__' | '/' | '/servers/$serverId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LogsRoute: typeof LogsRoute
-  PromptsRoute: typeof PromptsRoute
-  ResourcesRoute: typeof ResourcesRoute
-  ServersRoute: typeof ServersRoute
-  ToolsRoute: typeof ToolsRoute
+  ServersServerIdRoute: typeof ServersServerIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tools': {
-      id: '/tools'
-      path: '/tools'
-      fullPath: '/tools'
-      preLoaderRoute: typeof ToolsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/servers': {
-      id: '/servers'
-      path: '/servers'
-      fullPath: '/servers'
-      preLoaderRoute: typeof ServersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resources': {
-      id: '/resources'
-      path: '/resources'
-      fullPath: '/resources'
-      preLoaderRoute: typeof ResourcesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/prompts': {
-      id: '/prompts'
-      path: '/prompts'
-      fullPath: '/prompts'
-      preLoaderRoute: typeof PromptsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/logs': {
-      id: '/logs'
-      path: '/logs'
-      fullPath: '/logs'
-      preLoaderRoute: typeof LogsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -140,16 +58,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/servers/$serverId': {
+      id: '/servers/$serverId'
+      path: '/servers/$serverId'
+      fullPath: '/servers/$serverId'
+      preLoaderRoute: typeof ServersServerIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LogsRoute: LogsRoute,
-  PromptsRoute: PromptsRoute,
-  ResourcesRoute: ResourcesRoute,
-  ServersRoute: ServersRoute,
-  ToolsRoute: ToolsRoute,
+  ServersServerIdRoute: ServersServerIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
