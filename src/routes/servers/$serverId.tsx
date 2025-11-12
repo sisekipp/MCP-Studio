@@ -3,12 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Database, MessageSquare, Wrench, ScrollText, ArrowLeft, Circle, FileText, Loader2, Settings, RefreshCw } from 'lucide-react'
+import { Database, MessageSquare, Wrench, ScrollText, ArrowLeft, Circle, FileText, Loader2, Settings, RefreshCw, Play, Eye } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useServers } from '@/contexts/ServerContext'
 import { useEffect, useState } from 'react'
 import type { Resource, Prompt, Tool, ServerConfig } from '@/types/server'
 import { AddServerDialog } from '@/components/AddServerDialog'
+import { ToolExecutionDialog } from '@/components/ToolExecutionDialog'
+import { PromptTestDialog } from '@/components/PromptTestDialog'
+import { ResourceViewerDialog } from '@/components/ResourceViewerDialog'
 
 export const Route = createFileRoute('/servers/$serverId')({
   component: ServerDetail,
@@ -17,7 +20,7 @@ export const Route = createFileRoute('/servers/$serverId')({
 function ServerDetail() {
   const { serverId } = Route.useParams()
   const navigate = useNavigate()
-  const { servers, connectToServer, disconnectServer, updateServer, getServerResources, getServerPrompts, getServerTools, logs } = useServers()
+  const { servers, connectToServer, disconnectServer, updateServer, getServerResources, getServerPrompts, getServerTools, callTool, getPrompt, readResource, logs } = useServers()
 
   const server = servers.find(s => s.id === serverId)
 
@@ -26,6 +29,12 @@ function ServerDetail() {
   const [tools, setTools] = useState<Tool[]>([])
   const [loading, setLoading] = useState({ resources: false, prompts: false, tools: false })
   const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [selectedTool, setSelectedTool] = useState<Tool | null>(null)
+  const [toolDialogOpen, setToolDialogOpen] = useState(false)
+  const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null)
+  const [promptDialogOpen, setPromptDialogOpen] = useState(false)
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null)
+  const [resourceDialogOpen, setResourceDialogOpen] = useState(false)
 
   // Connect to server when component mounts if not connected
   useEffect(() => {
@@ -99,6 +108,33 @@ function ServerDetail() {
         await handleReconnect()
       }, 100)
     }
+  }
+
+  const handleExecuteTool = (tool: Tool) => {
+    setSelectedTool(tool)
+    setToolDialogOpen(true)
+  }
+
+  const handleToolExecution = async (toolName: string, args: unknown) => {
+    return await callTool(serverId, toolName, args)
+  }
+
+  const handleTestPrompt = (prompt: Prompt) => {
+    setSelectedPrompt(prompt)
+    setPromptDialogOpen(true)
+  }
+
+  const handlePromptExecution = async (promptName: string, args: Record<string, string>) => {
+    return await getPrompt(serverId, promptName, args)
+  }
+
+  const handleViewResource = (resource: Resource) => {
+    setSelectedResource(resource)
+    setResourceDialogOpen(true)
+  }
+
+  const handleResourceRead = async (uri: string) => {
+    return await readResource(serverId, uri)
   }
 
   const getServerInfo = () => {
@@ -232,7 +268,17 @@ function ServerDetail() {
                               <FileText className="h-5 w-5 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium truncate">{resource.name}</p>
+                              <div className="flex items-start justify-between gap-2">
+                                <p className="font-medium truncate">{resource.name}</p>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleViewResource(resource)}
+                                  className="flex-shrink-0"
+                                >
+                                  <Eye className="h-3 w-3 mr-1" />
+                                  View
+                                </Button>
+                              </div>
                               {resource.description && (
                                 <p className="text-sm text-muted-foreground mt-1">{resource.description}</p>
                               )}
@@ -290,7 +336,17 @@ function ServerDetail() {
                               <MessageSquare className="h-5 w-5 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium">{prompt.name}</p>
+                              <div className="flex items-start justify-between gap-2">
+                                <p className="font-medium">{prompt.name}</p>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleTestPrompt(prompt)}
+                                  className="flex-shrink-0"
+                                >
+                                  <Play className="h-3 w-3 mr-1" />
+                                  Test
+                                </Button>
+                              </div>
                               {prompt.description && (
                                 <p className="text-sm text-muted-foreground mt-1">{prompt.description}</p>
                               )}
@@ -358,7 +414,17 @@ function ServerDetail() {
                               <Wrench className="h-5 w-5 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium">{tool.name}</p>
+                              <div className="flex items-start justify-between gap-2">
+                                <p className="font-medium">{tool.name}</p>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleExecuteTool(tool)}
+                                  className="flex-shrink-0"
+                                >
+                                  <Play className="h-3 w-3 mr-1" />
+                                  Execute
+                                </Button>
+                              </div>
                               {tool.description && (
                                 <p className="text-sm text-muted-foreground mt-1">{tool.description}</p>
                               )}
@@ -451,6 +517,30 @@ function ServerDetail() {
         onAddServer={() => {}}
         onUpdateServer={handleUpdateServer}
         editingServer={server.config}
+      />
+
+      <ToolExecutionDialog
+        open={toolDialogOpen}
+        onOpenChange={setToolDialogOpen}
+        tool={selectedTool}
+        serverId={serverId}
+        onExecute={handleToolExecution}
+      />
+
+      <PromptTestDialog
+        open={promptDialogOpen}
+        onOpenChange={setPromptDialogOpen}
+        prompt={selectedPrompt}
+        serverId={serverId}
+        onExecute={handlePromptExecution}
+      />
+
+      <ResourceViewerDialog
+        open={resourceDialogOpen}
+        onOpenChange={setResourceDialogOpen}
+        resource={selectedResource}
+        serverId={serverId}
+        onRead={handleResourceRead}
       />
     </div>
   )

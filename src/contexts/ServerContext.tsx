@@ -12,6 +12,9 @@ interface ServerContextType {
   getServerResources: (serverId: string) => Promise<Resource[]>
   getServerPrompts: (serverId: string) => Promise<Prompt[]>
   getServerTools: (serverId: string) => Promise<Tool[]>
+  callTool: (serverId: string, toolName: string, args: unknown) => Promise<unknown>
+  getPrompt: (serverId: string, promptName: string, args: Record<string, string>) => Promise<unknown>
+  readResource: (serverId: string, uri: string) => Promise<unknown>
 }
 
 const ServerContext = createContext<ServerContextType | undefined>(undefined)
@@ -247,6 +250,85 @@ export function ServerProvider({ children }: { children: ReactNode }) {
     }
   }, [addLog])
 
+  const callTool = useCallback(async (serverId: string, toolName: string, args: unknown): Promise<unknown> => {
+    try {
+      addLog({
+        serverId,
+        level: 'info',
+        message: `Calling tool: ${toolName}`,
+        data: args
+      })
+      const result = await window.electronAPI.callTool(serverId, toolName, args)
+      addLog({
+        serverId,
+        level: 'info',
+        message: `Tool ${toolName} executed successfully`,
+        data: result
+      })
+      return result
+    } catch (error) {
+      addLog({
+        serverId,
+        level: 'error',
+        message: `Failed to call tool ${toolName}`,
+        data: error
+      })
+      throw error
+    }
+  }, [addLog])
+
+  const getPrompt = useCallback(async (serverId: string, promptName: string, args: Record<string, string>): Promise<unknown> => {
+    try {
+      addLog({
+        serverId,
+        level: 'info',
+        message: `Getting prompt: ${promptName}`,
+        data: args
+      })
+      const result = await window.electronAPI.getPrompt(serverId, promptName, args)
+      addLog({
+        serverId,
+        level: 'info',
+        message: `Prompt ${promptName} retrieved successfully`,
+        data: result
+      })
+      return result
+    } catch (error) {
+      addLog({
+        serverId,
+        level: 'error',
+        message: `Failed to get prompt ${promptName}`,
+        data: error
+      })
+      throw error
+    }
+  }, [addLog])
+
+  const readResource = useCallback(async (serverId: string, uri: string): Promise<unknown> => {
+    try {
+      addLog({
+        serverId,
+        level: 'info',
+        message: `Reading resource: ${uri}`
+      })
+      const result = await window.electronAPI.readResource(serverId, uri)
+      addLog({
+        serverId,
+        level: 'info',
+        message: `Resource ${uri} read successfully`
+      })
+      return result
+    } catch (error) {
+      addLog({
+        serverId,
+        level: 'error',
+        message: `Failed to read resource ${uri}`,
+        data: error
+      })
+      throw error
+    }
+  }, [addLog])
+
   return (
     <ServerContext.Provider
       value={{
@@ -260,6 +342,9 @@ export function ServerProvider({ children }: { children: ReactNode }) {
         getServerResources,
         getServerPrompts,
         getServerTools,
+        callTool,
+        getPrompt,
+        readResource,
       }}
     >
       {children}
