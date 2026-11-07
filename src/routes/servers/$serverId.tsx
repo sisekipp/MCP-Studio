@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Database, MessageSquare, Wrench, ScrollText, ArrowLeft, Circle, FileText, Loader2, Settings, RefreshCw, Play, Eye } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useServers } from '@/contexts/ServerContext'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { Resource, Prompt, Tool, ServerConfig } from '@/types/server'
 import { AddServerDialog } from '@/components/AddServerDialog'
 import { ToolExecutionDialog } from '@/components/ToolExecutionDialog'
@@ -36,21 +36,7 @@ function ServerDetail() {
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null)
   const [resourceDialogOpen, setResourceDialogOpen] = useState(false)
 
-  // Connect to server when component mounts if not connected
-  useEffect(() => {
-    if (server && server.status === 'disconnected') {
-      connectToServer(serverId)
-    }
-  }, [server, serverId, connectToServer])
-
-  // Load data when server is connected
-  useEffect(() => {
-    if (server && server.status === 'connected') {
-      loadServerData()
-    }
-  }, [server?.status, serverId])
-
-  const loadServerData = async () => {
+  const loadServerData = useCallback(async () => {
     try {
       // Load resources
       setLoading(prev => ({ ...prev, resources: true }))
@@ -73,7 +59,22 @@ function ServerDetail() {
       console.error('Failed to load server data:', error)
       setLoading({ resources: false, prompts: false, tools: false })
     }
-  }
+  }, [serverId, getServerResources, getServerPrompts, getServerTools])
+
+  // Connect to server when component mounts if not connected
+  useEffect(() => {
+    if (server && server.status === 'disconnected') {
+      connectToServer(serverId)
+    }
+  }, [server, serverId, connectToServer])
+
+  // Load data when server is connected
+  const serverStatus = server?.status
+  useEffect(() => {
+    if (serverStatus === 'connected') {
+      loadServerData()
+    }
+  }, [serverStatus, serverId, loadServerData])
 
   // Redirect if server not found
   if (!server) {
@@ -512,6 +513,7 @@ function ServerDetail() {
       </div>
 
       <AddServerDialog
+        key={server.config.id}
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         onAddServer={() => {}}

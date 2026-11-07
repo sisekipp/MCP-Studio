@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -23,23 +23,13 @@ export function ResourceViewerDialog({
   open,
   onOpenChange,
   resource,
-  serverId,
   onRead
 }: ResourceViewerDialogProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [content, setContent] = useState<unknown>(null)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (open && resource) {
-      loadResource()
-    } else {
-      setContent(null)
-      setError(null)
-    }
-  }, [open, resource])
-
-  const loadResource = async () => {
+  const loadResource = useCallback(async () => {
     if (!resource) return
 
     setIsLoading(true)
@@ -54,7 +44,13 @@ export function ResourceViewerDialog({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [resource, onRead])
+
+  useEffect(() => {
+    if (open && resource) {
+      loadResource()
+    }
+  }, [open, resource, loadResource])
 
   const handleClose = () => {
     setContent(null)
