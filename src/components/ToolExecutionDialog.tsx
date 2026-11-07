@@ -25,7 +25,6 @@ export function ToolExecutionDialog({
   open,
   onOpenChange,
   tool,
-  serverId,
   onExecute
 }: ToolExecutionDialogProps) {
   const [params, setParams] = useState<Record<string, string>>({})

@@ -25,7 +25,6 @@ export function PromptTestDialog({
   open,
   onOpenChange,
   prompt,
-  serverId,
   onExecute
 }: PromptTestDialogProps) {
   const [args, setArgs] = useState<Record<string, string>>({})

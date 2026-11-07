@@ -181,6 +181,7 @@ function Servers() {
       </div>
 
       <AddServerDialog
+        key={editingServer?.id ?? 'new'}
         open={dialogOpen}
         onOpenChange={handleCloseDialog}
         onAddServer={addServer}

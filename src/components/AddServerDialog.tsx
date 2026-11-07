@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,33 +30,6 @@ export function AddServerDialog({ open, onOpenChange, onAddServer, onUpdateServe
   const [url, setUrl] = useState(
     editingServer?.config.type === 'sse' || editingServer?.config.type === 'http' ? editingServer.config.url : ''
   )
-
-  // Update form fields when editingServer changes
-  useEffect(() => {
-    if (editingServer) {
-      setTransport(editingServer.transport)
-      setName(editingServer.name)
-      setDescription(editingServer.description || '')
-
-      if (editingServer.config.type === 'stdio') {
-        setCommand(editingServer.config.command)
-        setArgs(editingServer.config.args?.join(' ') || '')
-        setUrl('')
-      } else if (editingServer.config.type === 'sse' || editingServer.config.type === 'http') {
-        setUrl(editingServer.config.url)
-        setCommand('')
-        setArgs('')
-      }
-    } else {
-      // Reset form when not editing
-      setTransport('stdio')
-      setName('')
-      setDescription('')
-      setCommand('')
-      setArgs('')
-      setUrl('')
-    }
-  }, [editingServer])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
